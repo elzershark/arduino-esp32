@@ -18,12 +18,12 @@ const char* mqttServer = "ip.from.mqtt.server"; // your MQTT Server
 const int mqttPort = 1883; // your MQTT Port
 const char* mqttUser = "username"; // your MQTT Username
 const char* mqttPassword = "userpassword"; // your MQTT password
-const char* espName = "ESP32Cam"; // your espCam Name
-const char* inTopic = "ESP32Cam/door/Browser"; // your MQTT phath for activate browser 1/on/true aktivate your browser
-const char* msgTopic = "ESP32Cam/door/Erkannt"; // your MQTT phath for facial recognition
-const char* wifist = "ESP32Cam/door/wifi"; // your MQTT phath for facial recognition
+const char* espName = "1ESP32Cam"; // your espCam Name
+const char* inTopic = "1ESP32Cam/door/Browser"; // your MQTT phath for activate browser 1/on/true aktivate your browser
+const char* msgTopic = "1ESP32Cam/door/Erkannt"; // your MQTT phath for facial recognition
+const char* wifist = "1ESP32Cam/door/wifi"; // your MQTT phath for facial recognition
 #define relay_pin 2 // pin 12 can also be used. aktivate your Relais on this pin
-long interval = 3000;           // open lock for ... milliseconds
+long interval = 5000;           // open lock for ... milliseconds
 String rssii;
 //
 //
@@ -416,6 +416,11 @@ void interface_active(WebsocketsClient &client) {
 
   while (client.available() && websockets_active) {
     client.poll();
+      while (WiFi.status() != WL_CONNECTED) {
+    WiFi.begin(ssid, password);
+    delay(2000);
+  websockets_active = false;
+  }
 
   // If the MQTT connection inactively, then we try to set it and to publish/subscribe
   if (!mqttClient.connected()) {
@@ -521,6 +526,11 @@ void interface_inactive(WebsocketsClient &client) {
   out_res.image = image_matrix->item;
   while (!websockets_active) {
 
+  while (WiFi.status() != WL_CONNECTED) {
+    WiFi.begin(ssid, password);
+    delay(2000);
+  websockets_active = false;
+  }
   // If the MQTT connection inactively, then we try to set it and to publish/subscribe
   if (!mqttClient.connected()) {
     if (mqttClient.connect(espName, mqttUser, mqttPassword)) {
