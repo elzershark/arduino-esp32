@@ -22,6 +22,7 @@ const char* espName = "1ESP32Cam"; // your espCam Name
 const char* inTopic = "1ESP32Cam/door/Browser"; // your MQTT phath for activate browser 1/on/true aktivate your browser
 const char* msgTopic = "1ESP32Cam/door/Erkannt"; // your MQTT phath for facial recognition
 const char* wifist = "1ESP32Cam/door/wifi"; // your MQTT phath for facial recognition
+const char* wifiip = "1ESP32Cam/door/ip"; // your MQTT phath for facial recognition
 #define relay_pin 2 // pin 12 can also be used. aktivate your Relais on this pin
 long interval = 5000;           // open lock for ... milliseconds
 String rssii;
@@ -401,7 +402,7 @@ void open_door() {
       rssii = rssi;
       mqttClient.publish(msgTopic, gesicht.c_str());
       mqttClient.publish(wifist, rssii.c_str());
-
+      mqttClient.publish(wifiip, WiFi.localIP().toString().c_str());
   }
 }
 
@@ -416,27 +417,8 @@ void interface_active(WebsocketsClient &client) {
 
   while (client.available() && websockets_active) {
     client.poll();
-      while (WiFi.status() != WL_CONNECTED) {
-    WiFi.begin(ssid, password);
-    delay(2000);
-  websockets_active = false;
-  }
-
-  // If the MQTT connection inactively, then we try to set it and to publish/subscribe
   if (!mqttClient.connected()) {
-
-    // Connect and publish / subscribe
-    if (mqttClient.connect(espName, mqttUser, mqttPassword)) {
-
-      // Value from sensors
-      // subscribe for an inquiry interval
-      // subscribe to the LED control variable
-      mqttClient.subscribe(inTopic);
-    } else {
-      // If weren't connected, we wait for 10 seconds and try again
-
-      delay(1000);
-    }
+   reconnect();
   } 
       mqttClient.loop();
 
@@ -526,18 +508,8 @@ void interface_inactive(WebsocketsClient &client) {
   out_res.image = image_matrix->item;
   while (!websockets_active) {
 
-  while (WiFi.status() != WL_CONNECTED) {
-    WiFi.begin(ssid, password);
-    delay(2000);
-  websockets_active = false;
-  }
-  // If the MQTT connection inactively, then we try to set it and to publish/subscribe
   if (!mqttClient.connected()) {
-    if (mqttClient.connect(espName, mqttUser, mqttPassword)) {
-      mqttClient.subscribe(inTopic);
-    } else {
-      delay(1000);
-    }
+   reconnect();
   } 
       mqttClient.loop();
     
@@ -607,4 +579,19 @@ void callback(char * topic, byte * payload, unsigned int length) {
          }
       }
  
+}
+
+ void reconnect() {
+        while (WiFi.status() != WL_CONNECTED) {
+    WiFi.begin(ssid, password);
+    delay(2000);
+  }
+  // Loop until we're reconnected
+  while (!mqttClient.connected()) {
+    if (mqttClient.connect(espName, mqttUser, mqttPassword)) {
+      mqttClient.subscribe(inTopic);
+    } else {
+      delay(1000);
+    }
+  }
 }
