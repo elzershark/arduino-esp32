@@ -1,3 +1,175 @@
+/*
+
+ENGLISH
+!!!If the settings are not correct here, the cam will not work !!!!
+Boards URL = https://www.elzershark.com/iobroker/package_esp32_index.json
+
+Board = ESP32 Wrover Module
+Uploadspeed = 921600
+80Mhz
+QIO
+Partitions Scheme = Face Recocnitions 2621440 bytes
+Debug = Verbose
+!!!If the settings are not correct here, the cam will not work !!!!
+################
+
+Create web server under Linux (where ioBroker is).
+Create folder upload.
+create php file.
+Give out rights.
+---------------
+sudo apt-get update
+sudo apt-get install apache2
+sudo apt-get install php
+sudo mkdir /var/www/html/upload
+sudo nano /var/www/html/upload.php
+
+Copy and paste it with a right mouse click.
+Save with CTRL + O and exit with CTRL + X
+
+<?php
+$received = file_get_contents('php://input');
+$fileToWrite = "upload/picture.jpg";
+file_put_contents($fileToWrite, $received);  
+ ?>
+
+Continue with:
+sudo chmod 755 /var/www/html/upload.php
+sudo chown -R www-data /var/www/html/upload.php
+sudo chown -R www-data /var/www/html/upload
+---------------
+
+Finished!!
+
+Explanation:
+
+Create php file. Name = upload.php
+php file is directly on the web server. The web server has a subfolder called upload.
+Don't forget the rights so that something can be saved in the folder
+
+Example of the content of the php file:
+
+<?php
+$received = file_get_contents('php://input');
+$fileToWrite = "upload/picture.jpg"; // The file picture.jpg should be saved in the folder upload.
+file_put_contents($fileToWrite, $received);  
+ ?>
+ 
+Camera functions:
+1. Supply the camera with power.
+2. LED lights up.
+3. Cam connects to WiFi and MQTT
+4. Cam goes into offline / inactive mode. (Face recognition is activated).
+5. LED goes out.
+6. If the LED stays on, something is wrong. Check in the Arduino serial monitor.
+GPIO2 = connect relay. When a name is recognized, the relay switches and the LED flashes briefly. (Door opener function)
+GPIO12 = push button connection with GND (-). A photo is created when a button is pressed. (Bell function)
+A photo is created when the name is recognized.
+Photos can easily be automatically displayed in Telegram.
+
+MQTT function:
+Data points:
+Erkannt = A face was recognized. "Unbekannt" is written / updated.
+Name = A face with a name was recognized. Name is displayed.
+ip = The IP of the cam.
+ring = If true, the bell rang (GPIO12 -> GND) and / or a photo is created when "true" is entered.
+(In Blockly, set "if object" to "was changed". Then with "if": value of object is = false ... then do something. Do not use "true" in the block.)
+wifi = strength of the signal. The smaller the number, then better. "-5 is better than -50" (~ -50 to -40)
+info = Which ESP32 Cam is online.
+
+Photo function:
+Web server is required.
+php is required.
+The camera triggers a php script on the web server. The script saves an image in a subfolder.
+#########################################
+#########################################
+#########################################
+
+DEUTSCH!!!
+
+!!!!Stimmen hier Einstellungen nicht, funktioniert die Cam nicht!!!!
+
+Boards URL = https://www.elzershark.com/iobroker/package_esp32_index.json
+Board = ESP32 Wrover Module
+Uploadspeed = 921600
+80Mhz
+QIO
+Partitions Scheme = Face Recocnitions 2621440 bytes
+Debug = Verbose
+!!!!Stimmen hier Einstellungen nicht, funktioniert die Cam nicht!!!!
+
+
+Webserver erstellen unter Linux(wo ioBroker ist).
+Ordner upload erstellen.
+php datei erstellen.
+Rechte vergeben.
+---------------
+sudo apt-get update
+sudo apt-get install apache2
+sudo apt-get install php
+sudo mkdir /var/www/html/upload
+sudo nano /var/www/html/upload.php
+
+Das Folgende kopieren und mit rechtem Mausklick einfügen:
+
+<?php
+$received = file_get_contents('php://input');
+$fileToWrite = "upload/picture.jpg";
+file_put_contents($fileToWrite, $received);  
+ ?>
+
+Mit STRG + O u. Enter und mit STRG + X u. Enter verlassen
+
+Weiter mit:
+sudo chmod 755 /var/www/html/upload.php
+sudo chown -R www-data /var/www/html/upload.php
+sudo chown -R www-data /var/www/html/upload
+---------------
+
+Fertig!!
+
+Erklärung:
+
+Erstellen der php Datei. Name = upload.php
+php Datei ist direkt auf dem Webserver. Der Webserver hat ein Unterordner, Namens upload.
+Die Rechte nicht vergessen, damit in dem Ordner was gespeichert werden kann.
+
+Beispiel vom Inhalt der php Datei:
+
+<?php
+$received = file_get_contents('php://input');
+$fileToWrite = "upload/picture.jpg"; // Es soll die Datei picture.jpg in den Ordner upload gespeichert werden
+file_put_contents($fileToWrite, $received);  
+ ?>
+
+Kamera Funktionen:
+1. Kamera mit Strom versorgen.
+2. LED leuchtet.
+3. Cam verbindet sich mit W-Lan und MQTT
+4. Cam geht in den offline/inaktive Modus. (Gesichtserkennung ist aktiviert).
+5. LED geht aus.
+6. Wenn die LED anbleibt, stimmt was nicht. Im Serieller Monitor von Arduino überprüfen.
+GPIO2 = Relais anschließen. Bei Namens Erkennung schaltet das Relais und die LED Blinkt kurz. (Türöffnerfunktion)
+GPIO12 = Taster Anschließen mit GND (-). Bei Tastendruck wird ein Foto erstellt. (Klingelfuntion)
+Bei Namenserkennung wird ein Foto erstellt.
+Fotos können leicht automatisch im Telegramm angezeigt werden.
+
+MQTT Funktion:
+Datenpunkte:
+Erkannt = Ein Gesicht wurde erkannt. "Unbekannt" wird geschrieben/aktualisiert.
+Name = Ein Gesicht mit Name wurde erkannt. Name wird angezeigt.
+ip = Die IP von der Cam.
+ring = Bei true wurde geklingelt(GPIO12 -> GND) und/oder ein Foto wird erstellt bei eingabe von "true".
+(In Blockly, "falls Objekt" auf "wurde geändert" setzen. Dann mit, "falls": Wert von Objekt ist = false... dann mache etwas. Nicht "true" im Block nehmen.)
+wifi = Stärke des Signales. Je kleiner die Zahl um so besser "-5 ist besser als -50" (~-50bis-40)
+info = Welcher ESP32 Cam online ist.
+
+Foto Funktion:
+Webserver wird benötigt.
+php wird benötigt.
+Kamera löst ein php Script auf dem Webserver aus. Das Script speichert ein Bild in einem Unterorder.
+*/  
+
 #include <ArduinoWebsockets.h>
 #include "esp_http_client.h"
 #include "esp_http_server.h"
@@ -9,33 +181,51 @@
 #include "fr_forward.h"
 #include "fr_flash.h"
 #include <PubSubClient.h>
-
+unsigned long check_wifi = 30000;
+// String chipid; // MAC-ID from SSP32 Cam
+String wifist;
+String inTopic;
+String wifiip;
+String msgTopic;
+String ipconnect;
+String nerkannt;
+String foto;
+String relaise;
 //
 //
-const char* ssid       = "WlanName"; //  your network SSID (name)
-const char* password   = "WlanPassword"; // your network password
-const char* mqttServer = "ip.from.mqtt.server"; // your MQTT Server
-const int mqttPort = 1883; // your MQTT Port
-const char* mqttUser = "username"; // your MQTT Username
-const char* mqttPassword = "userpassword"; // your MQTT password
-const char* espName = "1ESP32Cam"; // your espCam Name
-const char* inTopic = "1ESP32Cam/door/Browser"; // your MQTT phath for activate browser 1/on/true aktivate your browser
-const char* msgTopic = "1ESP32Cam/door/Erkannt"; // your MQTT phath for facial recognition
-const char* wifist = "1ESP32Cam/door/wifi"; // your MQTT phath for facial recognition
-const char* wifiip = "1ESP32Cam/door/ip"; // your MQTT phath for facial recognition
-#define relay_pin 2 // pin 12 can also be used. aktivate your Relais on this pin
-long interval = 5000;           // open lock for ... milliseconds
+//             !!!ALIGN DATA / DATEN ANGLEICHEN !!!
+const char* ssid       = "WlanName"; //  your network SSID (name) / Wlan- Name
+const char* password   = "WlanPassword"; // your network password / Wlan Passwort
+const char* mqttServer = "ip.from.mqtt.server"; // your MQTT Server /  MQTT Server IP
+const int mqttPort = 1883; // your MQTT Port / MQTT PORT (z.B.1883)
+const char* mqttUser = "username"; // your MQTT Username / MQTT Benutzername
+const char* mqttPassword = "userpassword"; // your MQTT password / MQTT Passwort
+String espName = "ESP_NAME"; // How the ESP should be called e.g. ESP_front_door / Wie der ESP heissen soll z.B. ESP_Haustür
+const char *post_url = "http://192.168.68.177/upload.php"; // where the php file is to download the image / Wo die php Datei ist zum runterladen des Bildes
+#define relay_pin 2 // GPIO2 connect a relay there. - GPIO2 dort ein Relais anklemmen.
+#define relay_pin1 12 // GPIO12 connect with GND for Picture. - GPIO12 mit GND erstellt Foto.
+long interval = 5000;           // open lock for ... milliseconds /öffnet das Relais für ... Millisekunden
+String noname = "Unbekannt"; // In the data point "Gesicht erkannt", "Unbekannt" is written on recognition / Im Datenpunkt "Gesicht erkannt" wird "Unbekannt" geschrieben bei Erkennung
+// The paths can be changed under "void setup()". / Unter "void setup()" können die Pfade geändert werden.
+//
+//
+    
 String rssii;
-//
-//
 unsigned long door_opened_millis = 0;
+unsigned long led_millis = 0;
+HTTPClient http; 
+
 WiFiClient espClient;
 void callback(char * topic, byte * payload, unsigned int length);
 PubSubClient mqttClient(mqttServer, mqttPort, callback, espClient);
 
 #define ENROLL_CONFIRM_TIMES 5
-#define FACE_ID_SAVE_NUMBER 7
-
+#define FACE_ID_SAVE_NUMBER 50
+int freq = 5000;
+int ledCHannel = 1;
+int res = 8;
+const int ledPin = 4;
+int brightness = 0;
 // Select camera model
 //#define CAMERA_MODEL_WROVER_KIT
 //#define CAMERA_MODEL_ESP_EYE
@@ -111,14 +301,39 @@ typedef struct
 httpd_resp_value st_name;
 
 void setup() {
+  
+  //  MQTT Pfade:
+      nerkannt = espName;
+      nerkannt += "/Erkannt";
+      msgTopic = espName;
+      msgTopic += "/Name";
+      wifist = espName;
+      wifist += "/WiFi";
+      wifiip = espName;
+      wifiip += "/IP";
+      inTopic = espName;
+      inTopic += "/Ring";
+      nerkannt = espName;
+      nerkannt += "/Erkannt";
+      foto = espName;
+      foto += "/Foto";
+      relaise = espName;
+      relaise += "/Relay";      
+   //
+       
+  ledcSetup(ledCHannel, freq, res);
+  ledcAttachPin(ledPin, ledCHannel);
+  brightness = 2;
+  ledcWrite(ledCHannel, brightness); 
 
   Serial.begin(115200);
   Serial.setDebugOutput(true);
   Serial.println();
 
   digitalWrite(relay_pin, LOW);
+  digitalWrite(relay_pin1, HIGH);
   pinMode(relay_pin, OUTPUT);
-
+  pinMode(relay_pin1, INPUT_PULLUP);
   camera_config_t config;
   config.ledc_channel = LEDC_CHANNEL_0;
   config.ledc_timer = LEDC_TIMER_0;
@@ -171,16 +386,17 @@ void setup() {
   s->set_hmirror(s, 1);
 #endif
 
-  WiFi.begin(ssid, password);
-  byte wifi_conn = 0;
   while (WiFi.status() != WL_CONNECTED) {
-    delay(200);
+    brightness = 2;
+  ledcWrite(ledCHannel, brightness); 
+      WiFi.disconnect();
+      WiFi.begin(ssid, password);
+    delay(3000);
     Serial.print(".");
   }
   Serial.println("");
   Serial.println("WiFi connected");
   Serial.println();
-   
   app_httpserver_init();
   app_facenet_main();
   socket_server.listen(82);
@@ -190,9 +406,30 @@ void setup() {
     long rssi = WiFi.RSSI();
   Serial.print("RSSI:");
   Serial.println(rssi);
+  rssii = rssi;
+ ipconnect = "http://";
+ ipconnect += WiFi.localIP().toString().c_str();
+ ipconnect += ":82";
+      mqttClient.connect(espName.c_str(), mqttUser, mqttPassword); //MQTT Server ESP32 Name
+      mqttClient.publish(nerkannt.c_str(), ""); //MQTT Server ESP32 Noname
+      mqttClient.publish(msgTopic.c_str(), ""); //MQTT Server ESP32 Face Name
+      mqttClient.publish(wifist.c_str(), rssii.c_str()); //MQTT Server ESP32 wifi strength
+      mqttClient.publish(wifiip.c_str(), WiFi.localIP().toString().c_str()); //MQTT Server ESP32 IP Number
+      mqttClient.publish(inTopic.c_str(), "false"); 
+      mqttClient.subscribe(inTopic.c_str());
+      mqttClient.publish(foto.c_str(), "false"); 
+      mqttClient.subscribe(foto.c_str());   
+      mqttClient.publish(relaise.c_str(), "false"); 
+      mqttClient.subscribe(relaise.c_str());    
+      reconnect(); //inaktive Modus
+      
+      brightness = 0;
+      ledcWrite(ledCHannel, brightness);
 }
 
+//auto aktive setzen bei Seite öffnen
 static esp_err_t index_handler(httpd_req_t *req) {
+  websockets_active = true;
   httpd_resp_set_type(req, "text/html");
   httpd_resp_set_hdr(req, "Content-Encoding", "gzip");
   int gesicht = 0;
@@ -300,7 +537,6 @@ String urlencode(String str)
       encodedString += '%';
       encodedString += code0;
       encodedString += code1;
-      //encodedString+=code2;
     }
     yield();
   }
@@ -393,20 +629,43 @@ void handle_message(WebsocketsClient &client, WebsocketsMessage msg)
   }
 }
 
+//Relay open
 void open_door() {
-  
-  if (digitalRead(relay_pin) == LOW) {
-    digitalWrite(relay_pin, HIGH); //close (energise) relay so door unlocks
+
+    if (digitalRead(relay_pin) == LOW) {
+      mqttClient.publish(relaise.c_str(), "true");
+    digitalWrite(relay_pin, HIGH); //open (energise) relay so door unlocks
     door_opened_millis = millis(); // time relay closed and door opened
-      long rssi = WiFi.RSSI();
-      rssii = rssi;
-      mqttClient.publish(msgTopic, gesicht.c_str());
-      mqttClient.publish(wifist, rssii.c_str());
-      mqttClient.publish(wifiip, WiFi.localIP().toString().c_str());
-  }
+       
+  }    
+            if (brightness == 0) {
+            brightness = 2;
+            ledcWrite(ledCHannel, brightness);
+            led_millis = millis(); // led
+            long rssi = WiFi.RSSI();
+            rssii = rssi;
+      
+// MAC ID from ESP32####
+//chipid = "ESP32_";
+//chipid += String((uint32_t)ESP.getEfuseMac(), HEX);
+//Serial.printf("Chip id: %s\n", chipid.c_str());
+//    espName = chipid;
+     
+      take_send_photo();        
+            if (!mqttClient.connected()) {
+       mqttClient.connect(espName.c_str(), mqttUser, mqttPassword); //MQTT Server ESP32 Name
+  } 
+      mqttClient.loop();
+      mqttClient.publish(msgTopic.c_str(), gesicht.c_str()); //MQTT Server ESP32 Face Name
+      mqttClient.publish(wifist.c_str(), rssii.c_str()); //MQTT Server ESP32 wifi strength
+      mqttClient.publish(wifiip.c_str(), WiFi.localIP().toString().c_str()); //MQTT Server ESP32 IP Number
+      
+       }
 }
 
+//Aktive Modus
 void interface_active(WebsocketsClient &client) {
+     mqttpubsub();
     client.onMessage(handle_message);
   dl_matrix3du_t *image_matrix = dl_matrix3du_alloc(1, 320, 240, 3);
   http_img_process_result out_res = {0};
@@ -417,15 +676,38 @@ void interface_active(WebsocketsClient &client) {
 
   while (client.available() && websockets_active) {
     client.poll();
-  if (!mqttClient.connected()) {
-   reconnect();
+      if ((WiFi.status() != WL_CONNECTED) && (millis() > check_wifi)) {
+        brightness = 2;
+  ledcWrite(ledCHannel, brightness); 
+    Serial.println("Reconnecting to WiFi...");
+    WiFi.disconnect();
+    WiFi.begin(ssid, password);
+    check_wifi = millis() + 30000;
+    reconnect(); //inaktive Modus
+  }
+        if (!mqttClient.connected()) {
+       mqttClient.connect(espName.c_str(), mqttUser, mqttPassword); //MQTT Server ESP32 Name
+     mqttpubsub();
   } 
       mqttClient.loop();
-
+      
+ if (digitalRead(relay_pin) == HIGH) {
     if (millis() - interval > door_opened_millis) { // current time - face recognised time > 5 secs
-      digitalWrite(relay_pin, LOW); //open relay
+      digitalWrite(relay_pin, LOW); //close relay
+            mqttClient.publish(relaise.c_str(), "false"); 
+      mqttClient.subscribe(relaise.c_str());  
     }
+ }
+  if (brightness == 2) {
 
+    if (millis() - 500 > led_millis) { // current time - face recognised time > 5 secs
+     brightness = 0; 
+      ledcWrite(ledCHannel, brightness);
+    }
+  }
+  
+    ring(); //Klingel
+    
     fb = esp_camera_fb_get();
 
     if (g_state == START_DETECT || g_state == START_ENROLL || g_state == START_RECOGNITION)
@@ -442,7 +724,7 @@ void interface_active(WebsocketsClient &client) {
       {
         if (align_face(out_res.net_boxes, image_matrix, aligned_face) == ESP_OK)
         {
-
+          
           out_res.face_id = get_face_id(aligned_face);
           last_detected_millis = millis();
           if (g_state == START_DETECT) {
@@ -463,6 +745,11 @@ void interface_active(WebsocketsClient &client) {
               sprintf(captured_message, "GESICHT ERFASST VON %s", st_face_list.tail->id_name);
               client.send(captured_message);
               send_face_list(client);
+                if (brightness == 0) {
+            brightness = 2;
+            ledcWrite(ledCHannel, brightness);
+            led_millis = millis(); // led
+  }
             }
           }
           if (g_state == START_RECOGNITION  && (st_face_list.count > 0))
@@ -478,6 +765,7 @@ void interface_active(WebsocketsClient &client) {
             }
             else
             {
+              mqttClient.publish(nerkannt.c_str(), noname.c_str()); //MQTT Server ESP32 Noname
               client.send("GESICHT NICHT ERKANNT");
             }
           }
@@ -501,21 +789,43 @@ void interface_active(WebsocketsClient &client) {
   }
 }
 
+//Inaktive Modus
 void interface_inactive(WebsocketsClient &client) {
-
+     mqttpubsub();
   dl_matrix3du_t *image_matrix = dl_matrix3du_alloc(1, 320, 240, 3);
   http_img_process_result out_res = {0};
   out_res.image = image_matrix->item;
   while (!websockets_active) {
-
-  if (!mqttClient.connected()) {
-   reconnect();
+        
+      if ((WiFi.status() != WL_CONNECTED) && (millis() > check_wifi)) {
+    Serial.println("Reconnecting to WiFi...");
+                brightness = 2;
+            ledcWrite(ledCHannel, brightness);
+    WiFi.disconnect();
+    WiFi.begin(ssid, password);
+    check_wifi = millis() + 30000;
+    reconnect(); //inaktive Modus
+  }
+        if (!mqttClient.connected()) {
+       mqttClient.connect(espName.c_str(), mqttUser, mqttPassword); //MQTT Server ESP32 Name
+       mqttpubsub();
   } 
       mqttClient.loop();
-    
-    if (millis() - interval > door_opened_millis) { // current time - face recognised time > 5 secs
-      digitalWrite(relay_pin, LOW); //open relay
+        if (brightness == 2) {
+
+    if (millis() - 500 > led_millis) { // current time - face recognised time > 5 secs
+     brightness = 0; 
+      ledcWrite(ledCHannel, brightness);
     }
+  }
+ if (digitalRead(relay_pin) == HIGH) {
+    if (millis() - interval > door_opened_millis) { // current time - face recognised time > 5 secs
+      digitalWrite(relay_pin, LOW); //close relay
+            mqttClient.publish(relaise.c_str(), "false"); 
+      mqttClient.subscribe(relaise.c_str());  
+    }
+ }
+     ring(); //Klingel
 
     fb = esp_camera_fb_get();
 
@@ -530,6 +840,7 @@ void interface_inactive(WebsocketsClient &client) {
     {
       if (align_face(out_res.net_boxes, image_matrix, aligned_face) == ESP_OK)
       {
+
         out_res.face_id = get_face_id(aligned_face);
         if (st_face_list.count) // recorded faces exist
         {
@@ -539,6 +850,10 @@ void interface_inactive(WebsocketsClient &client) {
             gesicht = String(f->id_name);
             open_door();
           //  send_get_request(f->id_name);
+          }
+                  else
+        {
+              mqttClient.publish(nerkannt.c_str(), noname.c_str()); //MQTT Server ESP32 Noname
           }
         }
         dl_matrix3d_free(out_res.face_id);
@@ -552,8 +867,7 @@ void interface_inactive(WebsocketsClient &client) {
 
 void loop() {
 
-
- auto client = socket_server.accept();
+  auto client = socket_server.accept();
   Serial.println("loopin");
 
   if (client.available() && websockets_active) {
@@ -565,33 +879,135 @@ void loop() {
   interface_inactive(client);
  }
 
+//MQTT subscribe
 void callback(char * topic, byte * payload, unsigned int length) {
  
   // let's transform a subject (topic) and value (payload) to a line
   payload[length] = '\0';
   String strTopic = String(topic);
   String strPayload = String((char * ) payload);
-  if (strTopic == inTopic) {
+    if (strTopic == inTopic) {
     if (strPayload == "on" || strPayload == "1" || strPayload == "true"){
-      mqttClient.publish(inTopic, "zugriff");
-      mqttClient.subscribe(inTopic);
-      websockets_active = true;
+      take_send_photo();
+      mqttClient.publish(inTopic.c_str(), "false"); 
+      mqttClient.subscribe(inTopic.c_str());
          }
       }
- 
+        else
+       if (strTopic == foto) {
+    if (strPayload == "on" || strPayload == "1" || strPayload == "true"){
+      take_send_photo();
+      mqttClient.publish(foto.c_str(), "false"); 
+      mqttClient.subscribe(foto.c_str());
+         }
+      }
+      else
+     if (strTopic == relaise) {
+    if (strPayload == "on" || strPayload == "1" || strPayload == "true"){
+          digitalWrite(relay_pin, HIGH); //open (energise) relay so door unlocks
+    door_opened_millis = millis(); // time relay closed and door opened
+         }
+      }
 }
 
- void reconnect() {
-        while (WiFi.status() != WL_CONNECTED) {
-    WiFi.begin(ssid, password);
-    delay(2000);
+//Inaktive Modus
+void reconnect() {
+  
+            websockets_active = false;
+            http.begin(ipconnect.c_str());
+   int httpCode = http.POST("Message from ESP8266");   //Send the request
+   String payload = http.getString();                  //Get the response payload
+   Serial.println(httpCode);   //Print HTTP return code
+   Serial.println(payload);    //Print request response payload
+ //  http.end();  //Close connection
+}
+
+esp_err_t _http_event_handler(esp_http_client_event_t *evt)
+{
+  switch (evt->event_id) {
+    case HTTP_EVENT_ERROR:
+      Serial.println("HTTP_EVENT_ERROR");
+      break;
+    case HTTP_EVENT_ON_CONNECTED:
+      Serial.println("HTTP_EVENT_ON_CONNECTED");
+      break;
+    case HTTP_EVENT_HEADER_SENT:
+      Serial.println("HTTP_EVENT_HEADER_SENT");
+      break;
+    case HTTP_EVENT_ON_HEADER:
+      Serial.println();
+      Serial.printf("HTTP_EVENT_ON_HEADER, key=%s, value=%s", evt->header_key, evt->header_value);
+      break;
+    case HTTP_EVENT_ON_DATA:
+      Serial.println();
+      Serial.printf("HTTP_EVENT_ON_DATA, len=%d", evt->data_len);
+      if (!esp_http_client_is_chunked_response(evt->client)) {
+        // Write out data
+        // printf("%.*s", evt->data_len, (char*)evt->data);
+      }
+      break;
+    case HTTP_EVENT_ON_FINISH:
+      Serial.println("");
+      Serial.println("HTTP_EVENT_ON_FINISH");
+      break;
+    case HTTP_EVENT_DISCONNECTED:
+      Serial.println("HTTP_EVENT_DISCONNECTED");
+      break;
   }
-  // Loop until we're reconnected
-  while (!mqttClient.connected()) {
-    if (mqttClient.connect(espName, mqttUser, mqttPassword)) {
-      mqttClient.subscribe(inTopic);
-    } else {
-      delay(1000);
-    }
+  return ESP_OK;
+}
+
+//Foto senden
+static esp_err_t take_send_photo()
+{
+  Serial.println("Taking picture...");
+  camera_fb_t * fb = NULL;
+  esp_err_t res = ESP_OK;
+
+  fb = esp_camera_fb_get();
+  if (!fb) {
+    Serial.println("Camera capture failed");
+    return ESP_FAIL;
   }
+
+  esp_http_client_handle_t http_client;
+  
+  esp_http_client_config_t config_client = {0};
+  config_client.url = post_url;
+  config_client.event_handler = _http_event_handler;
+  config_client.method = HTTP_METHOD_POST;
+
+  http_client = esp_http_client_init(&config_client);
+
+  esp_http_client_set_post_field(http_client, (const char *)fb->buf, fb->len);
+
+  esp_http_client_set_header(http_client, "Content-Type", "image/jpg");
+
+  esp_err_t err = esp_http_client_perform(http_client);
+  if (err == ESP_OK) {
+    Serial.print("esp_http_client_get_status_code: ");
+    Serial.println(esp_http_client_get_status_code(http_client));
+  }
+
+  esp_http_client_cleanup(http_client);
+
+  esp_camera_fb_return(fb);
+}
+
+//Klingel
+void ring() {
+    if (digitalRead(relay_pin1) == LOW) {
+ if (!mqttClient.connected()) {
+       mqttClient.connect(espName.c_str(), mqttUser, mqttPassword); //MQTT Server ESP32 Name
+  } 
+      mqttClient.loop();
+      mqttClient.publish(inTopic.c_str(), "true"); 
+      mqttClient.subscribe(inTopic.c_str());
+      delay(2000); 
+      }
+}
+void mqttpubsub() {
+      mqttClient.subscribe(inTopic.c_str());
+      mqttClient.subscribe(foto.c_str()); 
+      mqttClient.subscribe(relaise.c_str());
 }
