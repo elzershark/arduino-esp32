@@ -11,7 +11,7 @@
           "category": "ESP32", 
           "name": "elzershark", 
           "url": "https://github.com/elzershark/arduino-esp32/releases/download/1.0.4a/esp32-1.0.4a.zip", 
-          "checksum": "SHA-256:A206F0967018CF0ADF9B4F218AA53F89393B82CED8CB4CF8E95947A7F2919556", 
+          "checksum": "SHA-256:96B9FB8F4252FCA1D604FBF9DEC13B6331C3D26D53DC0644BA1F1A3DE432E147", 
           "help": {
             "online": ""
           }, 
@@ -46,7 +46,7 @@
               "name": "mkspiffs"
             }
           ], 
-          "size": "36057751"
+          "size": "36061734"
         }
       ], 
       "tools": [
