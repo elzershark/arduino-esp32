@@ -1,95 +1,9 @@
 /*
-
-ENGLISH
-!!!If the settings are not correct here, the cam will not work !!!!
-Boards URL = https://www.elzershark.com/iobroker/package_esp32_index.json
-
-Board = ESP32 Wrover Module
-Uploadspeed = 921600
-80Mhz
-QIO
-Partitions Scheme = Face Recocnitions 2621440 bytes
-Debug = Verbose
-!!!If the settings are not correct here, the cam will not work !!!!
-################
-
-Create web server under Linux (where ioBroker is).
-Create folder upload.
-create php file.
-Give out rights.
----------------
-sudo apt-get update
-sudo apt-get install apache2
-sudo apt-get install php
-sudo mkdir /var/www/html/upload
-sudo nano /var/www/html/upload.php
-
-Copy and paste it with a right mouse click.
-Save with CTRL + O and exit with CTRL + X
-
-<?php
-$received = file_get_contents('php://input');
-$fileToWrite = "upload/picture.jpg";
-file_put_contents($fileToWrite, $received);  
- ?>
-
-Continue with:
-sudo chmod 755 /var/www/html/upload.php
-sudo chown -R www-data /var/www/html/upload.php
-sudo chown -R www-data /var/www/html/upload
----------------
-
-Finished!!
-
-Explanation:
-
-Create php file. Name = upload.php
-php file is directly on the web server. The web server has a subfolder called upload.
-Don't forget the rights so that something can be saved in the folder
-
-Example of the content of the php file:
-
-<?php
-$received = file_get_contents('php://input');
-$fileToWrite = "upload/picture.jpg"; // The file picture.jpg should be saved in the folder upload.
-file_put_contents($fileToWrite, $received);  
- ?>
- 
-Camera functions:
-1. Supply the camera with power.
-2. LED lights up.
-3. Cam connects to WiFi and MQTT
-4. Cam goes into offline / inactive mode. (Face recognition is activated).
-5. LED goes out.
-6. If the LED stays on, something is wrong. Check in the Arduino serial monitor.
-GPIO2 = connect relay. When a name is recognized, the relay switches and the LED flashes briefly. (Door opener function)
-GPIO12 = push button connection with GND (-). A photo is created when a button is pressed. (Bell function)
-A photo is created when the name is recognized.
-Photos can easily be automatically displayed in Telegram.
-
-MQTT function:
-Data points:
-Erkannt = A face was recognized. "Unbekannt" is written / updated.
-Name = A face with a name was recognized. Name is displayed.
-ip = The IP of the cam.
-ring = If true, the bell rang (GPIO12 -> GND) and / or a photo is created when "true" is entered.
-(In Blockly, set "if object" to "was changed". Then with "if": value of object is = false ... then do something. Do not use "true" in the block.)
-wifi = strength of the signal. The smaller the number, then better. "-5 is better than -50" (~ -50 to -40)
-info = Which ESP32 Cam is online.
-
-Photo function:
-Web server is required.
-php is required.
-The camera triggers a php script on the web server. The script saves an image in a subfolder.
-#########################################
-#########################################
-#########################################
-
 DEUTSCH!!!
 
 !!!!Stimmen hier Einstellungen nicht, funktioniert die Cam nicht!!!!
 
-Boards URL = https://www.elzershark.com/iobroker/package_esp32_index.json
+Boards URL = https://raw.githubusercontent.com/elzershark/arduino-esp32/master/package_esp32_index.json
 Board = ESP32 Wrover Module
 Uploadspeed = 921600
 80Mhz
@@ -99,10 +13,9 @@ Debug = Verbose
 !!!!Stimmen hier Einstellungen nicht, funktioniert die Cam nicht!!!!
 
 
-Webserver erstellen unter Linux(wo ioBroker ist).
-Ordner upload erstellen.
-php datei erstellen.
-Rechte vergeben.
+Webserver erstellen unter Linux(wo ioBroker ist):
+
+Mit Putty verbinden.
 ---------------
 sudo apt-get update
 sudo apt-get install apache2
@@ -149,7 +62,7 @@ Kamera Funktionen:
 4. Cam geht in den offline/inaktive Modus. (Gesichtserkennung ist aktiviert).
 5. LED geht aus.
 6. Wenn die LED anbleibt, stimmt was nicht. Im Serieller Monitor von Arduino überprüfen.
-GPIO2 = Relais anschließen. Bei Namens Erkennung schaltet das Relais und die LED Blinkt kurz. (Türöffnerfunktion)
+GPIO2 = Relais anschließen.
 GPIO12 = Taster Anschließen mit GND (-). Bei Tastendruck wird ein Foto erstellt. (Klingelfuntion)
 Bei Namenserkennung wird ein Foto erstellt.
 Fotos können leicht automatisch im Telegramm angezeigt werden.
@@ -157,17 +70,102 @@ Fotos können leicht automatisch im Telegramm angezeigt werden.
 MQTT Funktion:
 Datenpunkte:
 Erkannt = Ein Gesicht wurde erkannt. "Unbekannt" wird geschrieben/aktualisiert.
+Foto = Ein Foto wird erstellt bei eingabe von "true" "1" "on"
+IP = Die IP von der Cam.
 Name = Ein Gesicht mit Name wurde erkannt. Name wird angezeigt.
-ip = Die IP von der Cam.
-ring = Bei true wurde geklingelt(GPIO12 -> GND) und/oder ein Foto wird erstellt bei eingabe von "true".
-(In Blockly, "falls Objekt" auf "wurde geändert" setzen. Dann mit, "falls": Wert von Objekt ist = false... dann mache etwas. Nicht "true" im Block nehmen.)
-wifi = Stärke des Signales. Je kleiner die Zahl um so besser "-5 ist besser als -50" (~-50bis-40)
+Relay = Der Zustand des Relais.(GPIO12)
+Ring = Bei "true" "1" "on" wurde geklingelt(GPIO12 -> GND) und/oder ein Foto wird erstellt bei eingabe von "true" "1" "on".
+WiFi = Stärke des Signales. Je kleiner die Zahl um so besser "-5 ist besser als -50" (~-50bis-40)
+Door_Opener = Türöffner betätigen. GPIO2 mit Türöffner verbinden.
 info = Welcher ESP32 Cam online ist.
 
 Foto Funktion:
 Webserver wird benötigt.
 php wird benötigt.
 Kamera löst ein php Script auf dem Webserver aus. Das Script speichert ein Bild in einem Unterorder.
+
+#########################################
+#########################################
+#########################################
+
+ENGLISH
+!!!If the settings are not correct here, the cam will not work !!!!
+Boards URL = https://raw.githubusercontent.com/elzershark/arduino-esp32/master/package_esp32_index.json
+
+Board = ESP32 Wrover Module
+Uploadspeed = 921600
+80Mhz
+QIO
+Partitions Scheme = Face Recocnitions 2621440 bytes
+Debug = Verbose
+
+Connect with putty.
+---------------
+sudo apt-get update
+sudo apt-get install apache2
+sudo apt-get install php
+sudo mkdir /var/www/html/upload
+sudo nano /var/www/html/upload.php
+
+Copy and paste it with a right mouse click.
+Save with CTRL + O and exit with CTRL + X
+
+<?php
+$received = file_get_contents('php://input');
+$fileToWrite = "upload/picture.jpg";
+file_put_contents($fileToWrite, $received);  
+ ?>
+
+Continue with:
+sudo chmod 755 /var/www/html/upload.php
+sudo chown -R www-data /var/www/html/upload.php
+sudo chown -R www-data /var/www/html/upload
+---------------
+
+Finished!!
+
+Explanation:
+
+Create php file. Name = upload.php
+php file is directly on the web server. The web server has a subfolder called upload.
+Don't forget the rights so that something can be saved in the folder
+
+Example of the content of the php file:
+
+<?php
+$received = file_get_contents('php://input');
+$fileToWrite = "upload/picture.jpg"; // The file picture.jpg should be saved in the folder upload.
+file_put_contents($fileToWrite, $received);  
+ ?>
+ 
+Camera functions:
+1. Supply the camera with power.
+2. LED lights up.
+3. Cam connects to WiFi and MQTT
+4. Cam goes into offline / inactive mode. (Face recognition is activated).
+5. LED goes out.
+6. If the LED stays on, something is wrong. Check in the Arduino serial monitor.
+GPIO2 = connect relay.
+GPIO12 = push button connection with GND (-). A photo is created when a button is pressed. (Bell function)
+A photo is created when the name is recognized.
+Photos can easily be automatically displayed in Telegram.
+
+MQTT function:
+Data points:
+Erkannt = A face was recognized. "Unbekannt" is written / updated.
+Foto = A photo will be created by entering "true" "1" "on"
+IP = the IP of the cam.
+Name = A face with a name was recognized. Name is displayed.
+Relay = The state of the relay. (GPIO12)
+Ring = "true" "1" "on" rang the bell (GPIO12 -> GND) and / or a photo is created when entering "true" "1" "on".
+WiFi = strength of the signal. The smaller the number, the better "-5 is better than -50" (~ -50 to -40)
+Door_Opener = press the door opener. Connect GPIO2 with door opener.
+info = Which ESP32 Cam is online.
+
+Photo function:
+Web server is required.
+php is required.
+The camera triggers a php script on the web server. The script saves an image in a subfolder.
 */  
 
 #include <ArduinoWebsockets.h>
@@ -190,6 +188,7 @@ String msgTopic;
 String ipconnect;
 String nerkannt;
 String foto;
+String opener;
 String relaise;
 //
 //
@@ -201,7 +200,7 @@ const int mqttPort = 1883; // your MQTT Port / MQTT PORT (z.B.1883)
 const char* mqttUser = "username"; // your MQTT Username / MQTT Benutzername
 const char* mqttPassword = "userpassword"; // your MQTT password / MQTT Passwort
 String espName = "ESP_NAME"; // How the ESP should be called e.g. ESP_front_door / Wie der ESP heissen soll z.B. ESP_Haustür
-const char *post_url = "http://192.168.68.177/upload.php"; // where the php file is to download the image / Wo die php Datei ist zum runterladen des Bildes
+const char *post_url = "http://IPvomWebserver/upload.php"; // where the php file is to download the image / Wo die php Datei ist zum runterladen des Bildes
 #define relay_pin 2 // GPIO2 connect a relay there. - GPIO2 dort ein Relais anklemmen.
 #define relay_pin1 12 // GPIO12 connect with GND for Picture. - GPIO12 mit GND erstellt Foto.
 long interval = 5000;           // open lock for ... milliseconds /öffnet das Relais für ... Millisekunden
@@ -318,7 +317,9 @@ void setup() {
       foto = espName;
       foto += "/Foto";
       relaise = espName;
-      relaise += "/Relay";      
+      relaise += "/Relay";
+      opener = espName;
+      opener += "/Door_Opener";     
    //
        
   ledcSetup(ledCHannel, freq, res);
@@ -420,7 +421,8 @@ void setup() {
       mqttClient.publish(foto.c_str(), "false"); 
       mqttClient.subscribe(foto.c_str());   
       mqttClient.publish(relaise.c_str(), "false"); 
-      mqttClient.subscribe(relaise.c_str());    
+      mqttClient.publish(opener.c_str(), "false"); 
+      mqttClient.subscribe(opener.c_str());      
       reconnect(); //inaktive Modus
       
       brightness = 0;
@@ -629,15 +631,8 @@ void handle_message(WebsocketsClient &client, WebsocketsMessage msg)
   }
 }
 
-//Relay open
-void open_door() {
-
-    if (digitalRead(relay_pin) == LOW) {
-      mqttClient.publish(relaise.c_str(), "true");
-    digitalWrite(relay_pin, HIGH); //open (energise) relay so door unlocks
-    door_opened_millis = millis(); // time relay closed and door opened
-       
-  }    
+//Save Face
+void save_face() {  
             if (brightness == 0) {
             brightness = 2;
             ledcWrite(ledCHannel, brightness);
@@ -695,12 +690,12 @@ void interface_active(WebsocketsClient &client) {
     if (millis() - interval > door_opened_millis) { // current time - face recognised time > 5 secs
       digitalWrite(relay_pin, LOW); //close relay
             mqttClient.publish(relaise.c_str(), "false"); 
-      mqttClient.subscribe(relaise.c_str());  
+            mqttClient.publish(opener.c_str(), "false");
     }
  }
   if (brightness == 2) {
 
-    if (millis() - 500 > led_millis) { // current time - face recognised time > 5 secs
+    if (millis() - 5000 > led_millis) { // current time - face recognised time > 5 secs
      brightness = 0; 
       ledcWrite(ledCHannel, brightness);
     }
@@ -759,8 +754,8 @@ void interface_active(WebsocketsClient &client) {
             {
               char recognised_message[64];
               gesicht = String(f->id_name);
-              sprintf(recognised_message, "TÜR GEÖFFNET FÜR %s", f->id_name);
-              open_door();
+              sprintf(recognised_message, "TÜR ÖFFNEN FÜR %s ?", f->id_name);
+              save_face();
               client.send(recognised_message);
             }
             else
@@ -813,7 +808,7 @@ void interface_inactive(WebsocketsClient &client) {
       mqttClient.loop();
         if (brightness == 2) {
 
-    if (millis() - 500 > led_millis) { // current time - face recognised time > 5 secs
+    if (millis() - 5000 > led_millis) { // current time - face recognised time > 5 secs
      brightness = 0; 
       ledcWrite(ledCHannel, brightness);
     }
@@ -822,7 +817,7 @@ void interface_inactive(WebsocketsClient &client) {
     if (millis() - interval > door_opened_millis) { // current time - face recognised time > 5 secs
       digitalWrite(relay_pin, LOW); //close relay
             mqttClient.publish(relaise.c_str(), "false"); 
-      mqttClient.subscribe(relaise.c_str());  
+                  mqttClient.publish(opener.c_str(), "false"); 
     }
  }
      ring(); //Klingel
@@ -848,8 +843,8 @@ void interface_inactive(WebsocketsClient &client) {
           if (f) // face recognised
           {
             gesicht = String(f->id_name);
-            open_door();
-          //  send_get_request(f->id_name);
+            save_face();
+            //  send_get_request(f->id_name);
           }
                   else
         {
@@ -902,10 +897,10 @@ void callback(char * topic, byte * payload, unsigned int length) {
          }
       }
       else
-     if (strTopic == relaise) {
+     if (strTopic == opener) {
     if (strPayload == "on" || strPayload == "1" || strPayload == "true"){
-          digitalWrite(relay_pin, HIGH); //open (energise) relay so door unlocks
-    door_opened_millis = millis(); // time relay closed and door opened
+            mqttClient.publish(relaise.c_str(), "true"); 
+open_door_pur();
          }
       }
 }
@@ -1009,5 +1004,36 @@ void ring() {
 void mqttpubsub() {
       mqttClient.subscribe(inTopic.c_str());
       mqttClient.subscribe(foto.c_str()); 
-      mqttClient.subscribe(relaise.c_str());
+      mqttClient.subscribe(opener.c_str());
+}
+
+void open_door_pur() {
+
+    if (digitalRead(relay_pin) == LOW) {
+      
+    digitalWrite(relay_pin, HIGH); //open (energise) relay so door unlocks
+    door_opened_millis = millis(); // time relay closed and door opened
+       
+  }    
+            if (brightness == 0) {
+            brightness = 2;
+            ledcWrite(ledCHannel, brightness);
+            led_millis = millis(); // led
+            long rssi = WiFi.RSSI();
+            rssii = rssi;
+      
+// MAC ID from ESP32####
+//chipid = "ESP32_";
+//chipid += String((uint32_t)ESP.getEfuseMac(), HEX);
+//Serial.printf("Chip id: %s\n", chipid.c_str());
+//    espName = chipid;
+     
+            if (!mqttClient.connected()) {
+       mqttClient.connect(espName.c_str(), mqttUser, mqttPassword); //MQTT Server ESP32 Name
+  } 
+      mqttClient.loop();
+      mqttClient.publish(wifist.c_str(), rssii.c_str()); //MQTT Server ESP32 wifi strength
+      mqttClient.publish(wifiip.c_str(), WiFi.localIP().toString().c_str()); //MQTT Server ESP32 IP Number
+      
+       }
 }
