@@ -195,7 +195,7 @@ String relaise;
 //             !!!ALIGN DATA / DATEN ANGLEICHEN !!!
 const char* ssid       = "WlanName"; //  your network SSID (name) / Wlan- Name
 const char* password   = "WlanPassword"; // your network password / Wlan Passwort
-const char* mqttServer = "ip.from.mqtt.server"; // your MQTT Server /  MQTT Server IP
+const char* mqttServer = "ip_from_mqtt_server"; // your MQTT Server /  MQTT Server IP
 const int mqttPort = 1883; // your MQTT Port / MQTT PORT (z.B.1883)
 const char* mqttUser = "username"; // your MQTT Username / MQTT Benutzername
 const char* mqttPassword = "userpassword"; // your MQTT password / MQTT Passwort
@@ -417,12 +417,9 @@ void setup() {
       mqttClient.publish(wifist.c_str(), rssii.c_str()); //MQTT Server ESP32 wifi strength
       mqttClient.publish(wifiip.c_str(), WiFi.localIP().toString().c_str()); //MQTT Server ESP32 IP Number
       mqttClient.publish(inTopic.c_str(), "false"); 
-      mqttClient.subscribe(inTopic.c_str());
       mqttClient.publish(foto.c_str(), "false"); 
-      mqttClient.subscribe(foto.c_str());   
       mqttClient.publish(relaise.c_str(), "false"); 
       mqttClient.publish(opener.c_str(), "false"); 
-      mqttClient.subscribe(opener.c_str());      
       reconnect(); //inaktive Modus
       
       brightness = 0;
@@ -817,7 +814,7 @@ void interface_inactive(WebsocketsClient &client) {
     if (millis() - interval > door_opened_millis) { // current time - face recognised time > 5 secs
       digitalWrite(relay_pin, LOW); //close relay
             mqttClient.publish(relaise.c_str(), "false"); 
-                  mqttClient.publish(opener.c_str(), "false"); 
+                  mqttClient.publish(opener.c_str(), "false");
     }
  }
      ring(); //Klingel
@@ -884,16 +881,14 @@ void callback(char * topic, byte * payload, unsigned int length) {
     if (strTopic == inTopic) {
     if (strPayload == "on" || strPayload == "1" || strPayload == "true"){
       take_send_photo();
-      mqttClient.publish(inTopic.c_str(), "false"); 
-      mqttClient.subscribe(inTopic.c_str());
+      mqttClient.publish(inTopic.c_str(), "false");
          }
       }
         else
        if (strTopic == foto) {
     if (strPayload == "on" || strPayload == "1" || strPayload == "true"){
       take_send_photo();
-      mqttClient.publish(foto.c_str(), "false"); 
-      mqttClient.subscribe(foto.c_str());
+      mqttClient.publish(foto.c_str(), "false");
          }
       }
       else
@@ -996,8 +991,7 @@ void ring() {
        mqttClient.connect(espName.c_str(), mqttUser, mqttPassword); //MQTT Server ESP32 Name
   } 
       mqttClient.loop();
-      mqttClient.publish(inTopic.c_str(), "true"); 
-      mqttClient.subscribe(inTopic.c_str());
+      mqttClient.publish(inTopic.c_str(), "true");
       delay(2000); 
       }
 }
